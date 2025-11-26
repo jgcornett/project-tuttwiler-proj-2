@@ -1,0 +1,6 @@
+Type,Source Name,URL,Provenance Notes,Confidence (High/Med/Low),TLP,Status (Allow/Deny/Review)
+Primary,CVE/NVD,https://nvd.nist.gov,Canonical CVE feed,High,WHITE,Allow
+Primary,CISA ICS Advisories,https://www.cisa.gov/ics,Official ICS/medical alerts,High,WHITE,Allow
+Vendor,Siemens Security Advisory,https://cert-portal.siemens.com,OEM bulletin,High,WHITE,Allow
+Secondary,Well‑known DFIR blog,https://example.com,Requires vendor cross‑ref,Medium,WHITE,Review
+Risk,Anonymous paste site,https://example.com,No provenance,Low,AMBER,Deny

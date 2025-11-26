@@ -1,0 +1,17 @@
+Core Factor,Description,Scoring (0–5),Weight
+Human Safety Impact,"Potential for immediate injury, mis‑treatment, contamination, or loss of life.",0=None | 1=Minimal | 2=Indirect | 3=Possible direct | 4=Likely direct | 5=Certain/ongoing,3.0
+Clinical/Quality Accuracy,"Risk of incorrect readings/results affecting care/food safety (e.g., calibration drift).",0=None | 1=Low | 2=Moderate | 3=High | 4=Very high | 5=Proven error,2.0
+Dependency & Substitutability,How replaceable is the affected system/process (sole‑source? no backup path)?,0=Easily replaced | 2=Workarounds exist | 4=Sole‑source/no backup,2.0
+Exploitability / Activity,Ease and likelihood of exploit; evidence of active exploitation.,0=Theoretical | 1=Hard | 2=PoC | 3=Easy | 4=Weaponized | 5=Active in wild,2.0
+Patch / Remediation Status,Availability/timeliness of patch or compensating controls.,0=Patched | 1=Patch scheduled | 2=Patch available | 3=Mitigate only | 4=No patch ETA | 5=Won’t fix,1.5
+Operational Exposure,Network/physical exposure; segmentation; internet-facing?,0=Isolated | 1=Segmented | 2=Internal only | 3=Limited exposure | 4=User‑facing | 5=Internet‑facing,1.5
+
+Context Modifiers,Description,Range
+Scale/Reach,"How many people/units are affected (clinic size, production volume).",-5 to +5
+Time Sensitivity,"Urgency window (“golden hour”, cold-chain, near deadlines).",-5 to +5
+Source Confidence,Trust in provenance (vendor/CISA vs unverified tip).,-10 (low) to +0 (high)
+
+Threshold,Rule
+RED (Escalate),Total ≥ 70 OR (Human Safety ≥ 3 AND (Exploitability ≥ 3 OR Patch status ≥ 4))
+YELLOW (Monitor/Plan),Total 40–69 and no RED trigger conditions.
+GREEN (Informational),Total < 40.
