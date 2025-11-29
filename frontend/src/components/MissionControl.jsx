@@ -31,14 +31,20 @@ function MissionControl() {
       }
       
       if (data.success && data.alert) {
-        setCurrentAlert(data.alert)
-        // Set relevance from alert if available
-        if (data.alert.relevance) {
-          setRelevance(data.alert.relevance)
+        // Only update if it's a different alert
+        if (!currentAlert || currentAlert.id !== data.alert.id) {
+          setCurrentAlert(data.alert)
+          // Set relevance from alert if available
+          if (data.alert.relevance) {
+            setRelevance(data.alert.relevance)
+          } else {
+            setRelevance(null)
+          }
         }
       } else {
         // No alerts available
         setCurrentAlert(null)
+        setRelevance(null)
       }
     } catch (err) {
       console.error('Error fetching alert:', err)
@@ -110,12 +116,22 @@ function MissionControl() {
         // Wait a moment to show success message, then fetch next alert
         setTimeout(async () => {
           setSuccessMessage(null)
+          // Clear current alert immediately so UI updates
+          setCurrentAlert(null)
+          setLoading(true)
+          
+          // Add a small delay to ensure backend has processed the decision
+          await new Promise(resolve => setTimeout(resolve, 500))
+          
           try {
             await fetchTopPriorityAlert()
+          } catch (fetchError) {
+            console.error('Error fetching next alert:', fetchError)
+            setError('Failed to load next alert. Please refresh the page.')
           } finally {
             setSubmitting(false)
           }
-        }, 1500)
+        }, 1200)
       }
     } catch (err) {
       console.error('Error recording decision:', err)

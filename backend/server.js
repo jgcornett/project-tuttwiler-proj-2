@@ -237,17 +237,20 @@ app.get('/api/alerts/:id', async (req, res) => {
 // ============================================================================
 app.get('/api/alerts/priority/top', async (req, res) => {
   try {
+    // Get top priority alert that doesn't have a decision yet for this user
+    // This excludes alerts that already have decisions so we can move to the next one
     const sql = `
-      SELECT * FROM alerts
-      WHERE status = 'active'
+      SELECT a.* FROM alerts a
+      LEFT JOIN decisions d ON a.id = d.alert_id AND d.user_id = 'default_user'
+      WHERE a.status = 'active' AND d.id IS NULL
       ORDER BY 
-        CASE impact_level
+        CASE a.impact_level
           WHEN 'RED' THEN 1
           WHEN 'YELLOW' THEN 2
           WHEN 'GREEN' THEN 3
         END,
-        total_score DESC,
-        detected_at DESC
+        a.total_score DESC,
+        a.detected_at DESC
       LIMIT 1
     `;
     
