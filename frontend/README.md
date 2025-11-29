@@ -1,66 +1,56 @@
-# Project Tuttwiler - Mission Control Dashboard
+# Project Tuttwiler - Frontend Dashboard
 
-## Step 1: Basic Layout Structure ✅
+## Quick Start
 
-This is the initial implementation with hardcoded data. All components are in place and styled.
+### Option 1: Double-Click to Start (Easiest) ⭐
 
-## Getting Started
+1. **From the project root**, double-click: `start-all.bat`
+   - This starts both backend and frontend automatically
+   - Opens in separate windows
+   - Dashboard opens at http://localhost:3000
 
-### Install Dependencies
+### Option 2: Start Separately
+
+**Start Backend:**
+- Double-click: `backend/start-backend.bat`
+- Or run: `cd backend && node server.js`
+
+**Start Frontend:**
+- Double-click: `frontend/start-frontend.bat`
+- Or run: `cd frontend && npm run dev`
+
+### Option 3: Manual Start
+
 ```bash
+# Terminal 1 - Backend
+cd backend
+node server.js
+
+# Terminal 2 - Frontend
 cd frontend
-npm install
-```
-
-### Run Development Server
-```bash
 npm run dev
 ```
 
-The dashboard will open at `http://localhost:3000`
+## Viewing the Dashboard
 
-## What's Included
+**Open in browser:** http://localhost:3000
 
-- ✅ Complete Mission Control layout structure
-- ✅ All required sections (Header, Alert Card, Impact Pill, etc.)
-- ✅ Hardcoded dummy data (ready to replace with API calls)
-- ✅ Basic styling matching prototype design
-- ✅ Interactive elements (buttons, checkboxes, radio buttons)
+The `index.html` file is automatically served by the dev server at this URL.
 
-## Next Steps
+## Important Notes
 
-1. **Step 2:** Enhance styling (already partially done)
-2. **Step 3:** Connect to API (replace hardcoded data)
-3. **Step 4:** Add full interactivity (save decisions to database)
+- **You cannot double-click `index.html` directly** - React apps need a development server to run
+- **Both servers must be running:**
+  - Backend on port 3001 (for API)
+  - Frontend on port 3000 (for the dashboard)
+- The `start-all.bat` script handles everything automatically
 
-## File Structure
+## Troubleshooting
 
-```
-frontend/
-├── src/
-│   ├── components/
-│   │   ├── MissionControl.jsx    # Main dashboard component
-│   │   └── MissionControl.css    # Dashboard styles
-│   ├── App.jsx                    # App wrapper
-│   ├── App.css                    # App styles
-│   ├── main.jsx                   # Entry point
-│   └── index.css                  # Global styles
-├── index.html                     # HTML template
-├── package.json                   # Dependencies
-├── vite.config.js                 # Vite configuration
-└── README.md                      # This file
-```
+**Dashboard shows "Loading..." forever:**
+- Make sure backend API is running on port 3001
+- Check browser console for errors (F12)
 
-## Current Features
-
-- Mission Control header with Quiet Mode toggle
-- Alert title, timestamp, and affected function
-- Impact pill (RED/YELLOW/GREEN) with description
-- "Is This Us?" relevance checkbox
-- AI Summary section
-- Source & Confidence section
-- Safe Action Playbook (numbered list)
-- Decision buttons (GO/HOLD/ESCALATE)
-
-All data is currently hardcoded in `MissionControl.jsx` and ready to be replaced with API calls in Step 3.
-
+**"Cannot connect" errors:**
+- Verify both servers are running
+- Try restarting both servers

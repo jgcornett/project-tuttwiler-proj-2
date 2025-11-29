@@ -5,7 +5,12 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
-    open: true
+    open: '/',  // Opens index.html when server starts
+    host: true  // Allows access from network
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets'
   }
 })
 
