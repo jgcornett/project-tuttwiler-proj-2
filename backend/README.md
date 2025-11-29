@@ -1,59 +1,92 @@
-# Project Tuttwiler - Backend
+# Project Tuttwiler - Backend API
 
-## Database Schema
+## Overview
 
-This directory contains the database schema and setup for Project Tuttwiler.
+This is the backend API server for Project Tuttwiler's Mission Control Dashboard. It provides REST endpoints to fetch alerts, record decisions, and manage notifications.
 
-### Schema Overview
+## Technology Stack
 
-The database uses **SQLite** for the MVP (easiest setup, no separate server needed).
+- **Node.js** with **Express.js** - Web server framework
+- **SQLite3** - Database (file-based, no separate server needed)
+- **CORS** - Cross-origin resource sharing for frontend
 
-#### Tables:
+## Setup Instructions
 
-1. **`alerts`** - Core alert information
-   - Stores alert details, impact levels, scores, status
-   - Primary table for the Mission Control dashboard
-
-2. **`provenance`** - Source tracking and verification
-   - Links to alerts, stores source URLs, verification status
-   - Tracks confidence levels and TLP markings
-
-3. **`safe_actions`** - Safe Action Playbook steps
-   - Numbered action steps for each alert
-   - Supports different action types (pre-checks, do-nots, actions, etc.)
-
-4. **`notifications`** - User notifications
-   - Tracks which users have been notified about alerts
-   - Read/unread status
-
-5. **`decisions`** - User decisions (GO/HOLD/ESCALATE)
-   - Records all triage decisions
-   - Links to alerts and users
-
-6. **`audit_logs`** - Complete audit trail
-   - Logs all actions and changes
-   - For compliance and troubleshooting
-
-### Setup Instructions
-
-#### Option 1: Using SQLite Command Line
+### 1. Install Dependencies
 
 ```bash
 cd backend
-sqlite3 tuttwiler.db < schema.sql
+npm install
 ```
 
-#### Option 2: Using Node.js/Python Script
+### 2. Database Setup
 
-(Will be created in next steps)
+Make sure you've created the database:
 
-### Database File
+1. Open SQLiteStudio
+2. Create `tuttwiler.db` in the `backend` folder
+3. Run `schema.sql` to create tables
+4. Run `seed-data.sql` to populate with test data
 
-The SQLite database will be created as `tuttwiler.db` in the backend directory.
+### 3. Start the API Server
 
-### Next Steps
+```bash
+# Development mode (with auto-reload)
+npm run dev
 
-1. ✅ Database schema designed
-2. ⏭️ Create seed data script (Step 2)
-3. ⏭️ Set up API server (Step 3)
+# Production mode
+npm start
+```
 
+The API will start on **http://localhost:3001**
+
+### 4. Test the API
+
+Open your browser or use curl:
+
+```bash
+# Health check
+curl http://localhost:3001/api/health
+
+# Get all alerts
+curl http://localhost:3001/api/alerts
+
+# Get top priority alert
+curl http://localhost:3001/api/alerts/priority/top
+```
+
+## API Endpoints
+
+### GET `/api/health`
+Health check endpoint.
+
+### GET `/api/alerts`
+Get all alerts with optional filters (status, impact_level, limit).
+
+### GET `/api/alerts/priority/top`
+Get the top priority alert (single-card focus for Mission Control).
+
+### GET `/api/alerts/:id`
+Get a single alert with full details (including provenance and safe actions).
+
+### POST `/api/decisions`
+Record a GO/HOLD/ESCALATE decision.
+
+### GET `/api/notifications`
+Get user notifications.
+
+## Database Schema
+
+See `SCHEMA_DOCUMENTATION.md` for detailed schema documentation.
+
+## Project Structure
+
+```
+backend/
+├── server.js              # Main API server
+├── database.js            # Database connection and helpers
+├── schema.sql             # Database schema
+├── seed-data.sql          # Test data
+├── package.json           # Dependencies
+└── README.md              # This file
+```

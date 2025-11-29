@@ -275,13 +275,18 @@
   min-width: 120px;
 }
 
-.decision-button:hover {
+.decision-button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.decision-button:active {
+.decision-button:active:not(:disabled) {
   transform: translateY(0);
+}
+
+.decision-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .decision-go {

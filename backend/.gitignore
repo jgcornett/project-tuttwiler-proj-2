@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Database files (don't commit the actual database)
+*.db
+*.sqlite
+*.sqlite3
+tuttwiler
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
