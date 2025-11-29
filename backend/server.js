@@ -66,6 +66,80 @@ app.get('/api/alerts', async (req, res) => {
 });
 
 // ============================================================================
+// GET /api/alerts/history - Get alerts with decisions (history view)
+// MUST come before /api/alerts/:id to avoid route conflict
+// ============================================================================
+app.get('/api/alerts/history', async (req, res) => {
+  try {
+    const { limit = 50 } = req.query;
+    
+    // Get alerts with their most recent decision (using subquery instead of window function for compatibility)
+    const sql = `
+      SELECT 
+        a.*,
+        d.decision_type,
+        d.decision_timestamp,
+        d.notes as decision_notes,
+        d.relevance_at_decision
+      FROM alerts a
+      LEFT JOIN (
+        SELECT d1.*
+        FROM decisions d1
+        INNER JOIN (
+          SELECT alert_id, MAX(decision_timestamp) as max_timestamp
+          FROM decisions
+          WHERE user_id = ?
+          GROUP BY alert_id
+        ) d2 ON d1.alert_id = d2.alert_id AND d1.decision_timestamp = d2.max_timestamp
+        WHERE d1.user_id = ?
+      ) d ON a.id = d.alert_id
+      ORDER BY a.detected_at DESC
+      LIMIT ?
+    `;
+    
+    const alerts = await dbAll(sql, ['default_user', 'default_user', parseInt(limit)]);
+    
+    // Format the response
+    const formattedAlerts = alerts.map(alert => ({
+      id: alert.id,
+      title: alert.title,
+      description: alert.description,
+      aiSummary: alert.ai_summary,
+      timestamp: new Date(alert.detected_at).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }),
+      date: new Date(alert.detected_at).toLocaleDateString('en-US'),
+      detectedAt: alert.detected_at,
+      affectedFunction: alert.affected_function,
+      systemName: alert.system_name,
+      impactLevel: alert.impact_level,
+      impactDescription: alert.impact_description,
+      status: alert.status,
+      totalScore: alert.total_score,
+      decisionType: alert.decision_type || null,
+      decisionTimestamp: alert.decision_timestamp || null,
+      decisionNotes: alert.decision_notes || null,
+      relevance: alert.relevance_at_decision || alert.relevance || null
+    }));
+    
+    res.json({
+      success: true,
+      count: formattedAlerts.length,
+      alerts: formattedAlerts
+    });
+  } catch (error) {
+    console.error('Error fetching alert history:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch alert history',
+      message: error.message
+    });
+  }
+});
+
+// ============================================================================
 // GET /api/alerts/:id - Get single alert with full details
 // ============================================================================
 app.get('/api/alerts/:id', async (req, res) => {
@@ -346,79 +420,6 @@ app.post('/api/decisions', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to record decision',
-      message: error.message
-    });
-  }
-});
-
-// ============================================================================
-// GET /api/alerts/history - Get alerts with decisions (history view)
-// ============================================================================
-app.get('/api/alerts/history', async (req, res) => {
-  try {
-    const { limit = 50 } = req.query;
-    
-    // Get alerts with their most recent decision (using subquery instead of window function for compatibility)
-    const sql = `
-      SELECT 
-        a.*,
-        d.decision_type,
-        d.decision_timestamp,
-        d.notes as decision_notes,
-        d.relevance_at_decision
-      FROM alerts a
-      LEFT JOIN (
-        SELECT d1.*
-        FROM decisions d1
-        INNER JOIN (
-          SELECT alert_id, MAX(decision_timestamp) as max_timestamp
-          FROM decisions
-          WHERE user_id = ?
-          GROUP BY alert_id
-        ) d2 ON d1.alert_id = d2.alert_id AND d1.decision_timestamp = d2.max_timestamp
-        WHERE d1.user_id = ?
-      ) d ON a.id = d.alert_id
-      ORDER BY a.detected_at DESC
-      LIMIT ?
-    `;
-    
-    const alerts = await dbAll(sql, ['default_user', 'default_user', parseInt(limit)]);
-    
-    // Format the response
-    const formattedAlerts = alerts.map(alert => ({
-      id: alert.id,
-      title: alert.title,
-      description: alert.description,
-      aiSummary: alert.ai_summary,
-      timestamp: new Date(alert.detected_at).toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      }),
-      date: new Date(alert.detected_at).toLocaleDateString('en-US'),
-      detectedAt: alert.detected_at,
-      affectedFunction: alert.affected_function,
-      systemName: alert.system_name,
-      impactLevel: alert.impact_level,
-      impactDescription: alert.impact_description,
-      status: alert.status,
-      totalScore: alert.total_score,
-      decisionType: alert.decision_type || null,
-      decisionTimestamp: alert.decision_timestamp || null,
-      decisionNotes: alert.decision_notes || null,
-      relevance: alert.relevance_at_decision || alert.relevance || null
-    }));
-    
-    res.json({
-      success: true,
-      count: formattedAlerts.length,
-      alerts: formattedAlerts
-    });
-  } catch (error) {
-    console.error('Error fetching alert history:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch alert history',
       message: error.message
     });
   }
